@@ -23,6 +23,9 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src : '~/plugins/vue-apexchart.js', ssr : false },
+    { src : '~/plugins/axios.js', ssr : false },
+    
+
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -37,24 +40,24 @@ export default {
 
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [
+/*   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
-  ],
+    '@nuxtjs/axios',   
+  ], */
  googleFonts: {
  
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {
+/*   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: '/',
-  },
+  }, */
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
@@ -72,7 +75,8 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {    
     vendor : [
-      'vue-apexchart'
+      'vue-apexchart',
+      'vue-axios',
    ]
   },
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container>
+    <v-container fluid>
       <v-bottom-navigation
         v-model="value"
         :background-color="color"
@@ -171,6 +171,7 @@
 
 <script>
 export default {
+   layout:'core',
   name: 'BmevecMasterDashboardbme',
 
   data() {

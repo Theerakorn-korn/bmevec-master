@@ -1,7 +1,6 @@
 <template>
-<div>
    <v-container fluid>
-         <v-alert id="alert" dense type="info"> ติดต่อเรา </v-alert>
+         <v-alert id="alert" dense type="info"> เอกสารเผยแพร่ </v-alert>
     <v-row>
       <v-col cols="12" md="8">
         <v-card>
@@ -30,13 +29,8 @@
       <v-col cols="12" md="4">
         <v-card>
           <v-card-text>
-            <base-subheading subheading="คู่มือการใช้งาน" />
-            <base-material-alert
-              v-for="item in manual_ss"
-              :key="item.id_manual"
-              dark
-              color="primary"
-            >
+            <base-subheading subheading="แนวปฏิบัติ" />
+            <base-material-alert>
               <span style="font-size: 18px"> </span>
               <v-divider class="my-4 red" style="opacity: 0.22"></v-divider>
               <span style="font-size: 16px"> </span>
@@ -57,12 +51,13 @@
       </v-col>
     </v-row>
   </v-container>  
-</div>
+
  
 </template>
 
 <script>
 export default {
+   layout:'core',
   data: () => ({}),
 
   computed: {},

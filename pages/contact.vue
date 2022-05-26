@@ -177,6 +177,7 @@
 
 <script>
 export default {
+   layout:'core',
   name: 'BmevecMasterContact',
 
   data() {

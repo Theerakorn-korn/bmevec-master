@@ -16,6 +16,7 @@
 
 <script>
 export default {
+   layout:'core',
   name: 'InspirePage',
 }
 </script>

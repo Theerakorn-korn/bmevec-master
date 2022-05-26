@@ -1,13 +1,15 @@
 <template>
-  <v-app>
-    <v-navigation-drawer
+  <v-app>  
+ <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
       app
+      fixed
       id="navigation"
-      dark
-    >
+      dark      
+       class="back-drow"
+   >
       <v-list shaped>
         <v-list-item id="list-item-head">
           <v-list-item-avatar class="align-self-center">
@@ -23,7 +25,8 @@
           </v-list-item-content>
         </v-list-item>
         <v-divider class="mx-4 ma-2"></v-divider>
-        <v-list-item-group v-model="selectedItem" color="#C8E6C9">
+       
+        <v-list-item-group color="#C8E6C9">
           <v-list-item
             v-for="(item, i) in items"
             :key="i"
@@ -38,18 +41,10 @@
               <v-list-item-title v-text="item.title" />
             </v-list-item-content>
           </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      <template v-slot:append>
-        <div class="ma-1">
-          <v-btn href="http://bme.vec.go.th/" target="_blank" block rounded color="#837e7d" class="black--text">สำนักนโยบายและแผน</v-btn> 
-        </div>
-         <div class="ma-1">
-          <v-btn href="https://bme.vec.go.th/th-th/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%99/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%A5.aspx" target="_blank" block rounded color="#837e7d" class="black--text">กลุ่มงานติดตามฯ</v-btn> 
-        </div>        
-      </template>
+        </v-list-item-group>     
+      </v-list>   
+       
     </v-navigation-drawer>
-
     <v-app-bar dark id="headerbar" :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn icon @click.stop="miniVariant = !miniVariant">
@@ -63,12 +58,10 @@
     </v-app-bar>
     <v-main>
       <v-app>
-        <v-container>
+        <v-container fluid>
           <Nuxt />
           <Settings />
-          <Footers/>
         </v-container>
-        
       </v-app>
     </v-main>
     <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
@@ -88,12 +81,12 @@
 import { mapState } from 'vuex'
 import Settings from '~/components/Settings.vue'
 import Footers from '../components/Footers.vue'
+import userlogin from '../pages/login.vue'
 
 export default {
   name: 'DefaultLayout',
   data() {
-    return {
-      selectedItem: 1,
+    return {     
       clipped: false,
       drawer: false,
       fixed: false,
@@ -116,7 +109,7 @@ export default {
         {
           icon: 'mdi-newspaper',
           title: 'ข่าวประชาสัมพันธ์',
-          to: '/inspire',
+          to: '/news',
         },
         {
           icon: 'mdi-file-document',
@@ -134,14 +127,69 @@ export default {
           to: '/login',
         },
       ],
+      items_admin: [
+        {
+          icon: 'mdi-apps',
+          title: 'หน้าแรก',
+          to: '/',
+        },
+        {
+          icon: 'mdi-chart-histogram',
+          title: 'ระบบ e-MVS',
+          to: '/dashboardbme',
+        },
+        {
+          icon: 'mdi-shield-half-full',
+          title: 'ระบบควบคุมภายใน',
+          to: '/dashboardbme',
+        },
+        {
+          icon: 'mdi-shield-half-full',
+          title: 'สถานศึกษา',
+          to: '/dashboardbme',
+        },
+        {
+          icon: 'mdi-shield-half-full',
+          title: 'ข่าวประชาสัมพันธ์',
+          to: '/dashboardbme',
+        },
+      ],
+
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'กลุ่มงานติดตามและประเมินผล สํานักนโยบายและแผน',
       icons: ['mdi-facebook', 'mdi-line'],
+      user: [],
     }
   },
-  components: { Settings, Footers },
+  components: { Settings, Footers ,userlogin},
+  async mounted() {
+    await this.check_login()
+  },
+
+ 
+  methods: {
+    async check_login() {
+      let result
+      let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+      if(userSession=='0'){    
+      this.user = 'null'   
+      }else{      
+      result = await this.$http.post('admin.php', {
+        user_name: userSession.user_name,
+        ApiKey: 'HRvec2021',
+      })
+      this.user = result.data
+      console.log(this.user)
+      }
+    },
+    logout() {
+      sessionStorage.clear()
+      this.$router.push('/')
+      this.check_login()
+    },
+  },
 }
 </script>
 <style scoped>
@@ -157,10 +205,9 @@ export default {
 </style>
 
 <style scoped>
-
 #headerbar {
   background-color: #750606;
-  border-bottom: 3px solid #d68822;
+  background: linear-gradient(270deg, #590303 0%, #7e1010 35%, #750606 100%); border-bottom: 3px solid #d68822;
 }
 #navigation {
   background-color: #837e7d;
@@ -169,5 +216,9 @@ export default {
 #list-item-head {
   background-color: #750606;
   border-bottom: 3px solid #d68822;
+}
+.back-drow{
+ background: rgb(1, 25, 53);
+background: linear-gradient(0deg, rgb(35, 38, 42) 0%, rgb(80, 92, 108) 35%, rgb(175, 183, 193) 100%);
 }
 </style>

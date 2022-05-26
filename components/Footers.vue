@@ -1,6 +1,6 @@
 <template>
 
-  <v-footer color="#E0E0E0" padless fixed >
+  <v-footer color="#E0E0E0" padless  >
     <v-row  no-gutters>      
       <v-col class="py-4 text-right white--text" cols="12">
         &copy; {{ new Date().getFullYear() }} —

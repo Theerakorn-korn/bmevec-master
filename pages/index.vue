@@ -1,5 +1,5 @@
 <template>
-  <div id="pageIndex">    
+  <div id="pageIndex">  
     <v-container fluid>     
       <!-- Carousel -->
       <Dashcarousel />
@@ -28,7 +28,9 @@ import Dashcarousel from '../components/Dashcarousel.vue'
 import Dashdetail from '~/components/Dashdetail.vue'
 import Dashchart from '~/components/Dashchart.vue'
 import Footer from '~/components/Footers.vue'
+import Navigation from '~/components/core/navigation.vue'
 export default {
+  layout:'core',
   name: 'IndexPage',
   data() {
     return {
@@ -44,6 +46,7 @@ export default {
     Dashdetail,
     Dashchart,
     Footer,
-  },
+    Navigation
+},
 }
 </script>
