@@ -4,11 +4,9 @@
     <v-row>
       <v-col cols="12" md="8">
         <v-card>
-          <v-card-text>
-            <base-subheading subheading="ประชาสัมพันธ์" />
+          <v-card-text>           
             <v-col cols="12" lg="6" class="text-right">
-              <v-text-field
-                v-model="search"
+              <v-text-field               
                 append-icon="mdi-magnify"
                 label="ค้นหา ระบุคำ หรือ ส่วนข้อความเกี่ยวข้อง"
                 single-linehide-details
@@ -29,8 +27,8 @@
       <v-col cols="12" md="4">
         <v-card>
           <v-card-text>
-            <base-subheading subheading="แนวปฏิบัติ" />
-            <base-material-alert>
+        
+          
               <span style="font-size: 18px"> </span>
               <v-divider class="my-4 red" style="opacity: 0.22"></v-divider>
               <span style="font-size: 16px"> </span>
@@ -44,8 +42,7 @@
                 target="_blank"
                 id="a"
                 >คู่มือ</v-btn
-              >
-            </base-material-alert>
+              >          
           </v-card-text>
         </v-card>
       </v-col>

@@ -5,61 +5,67 @@
       <v-row>
         <v-col cols="12" md="6">
           <v-card>
-            <v-card-text>
-              <v-text-field
-                rounded
-                prepend-icon="mdi-email"
-                name="email"
-                label="Email :"
-                type="text"
-                :rules="[(v) => !!v || 'กรุณากรอก Email']"
-                filled
-                dense
-                outlined
-              >
-              </v-text-field>
-              <v-text-field
-                rounded
-                prepend-icon="mdi-account"
-                name="name"
-                label="ชื่อ-นามสกุล :"
-                type="text"
-                :rules="[(v) => !!v || 'กรุณากรอก ชื่อ-นามสกุล']"
-                filled
-                dense
-                outlined
-              >
-              </v-text-field>
-              <v-text-field
-                rounded
-                prepend-icon="mdi-format-title"
-                name="topic"
-                label="หัวข้อ :"
-                type="text"
-                :rules="[(v) => !!v || 'กรุณากรอก หัวข้อ']"
-                filled
-                dense
-                outlined
-              >
-              </v-text-field>
-              <v-textarea
-                rounded
-                prepend-icon="mdi-details"
-                name="detail"
-                label="รายละเอีอยด :"
-                type="text"
-                :rules="[(v) => !!v || 'กรุณากรอก รายละเอียด']"
-                filled
-                dense
-                outlined
-              >
-              </v-textarea>
-              <div class="text-center">
-                <v-btn rounded color="primary">
-                  <v-icon>mdi-send</v-icon> ส่ง</v-btn
+            <v-form ref="addcontact_usform" lazy-validation>
+              <v-card-text>
+                <v-text-field
+                  v-model="addcontact_us.contact_us_email"
+                  rounded
+                  prepend-icon="mdi-email"
+                  name="email"
+                  label="Email :"
+                  type="text"
+                  :rules="[(v) => !!v || 'กรุณากรอก Email']"
+                  filled
+                  dense
+                  outlined
                 >
-              </div>
-            </v-card-text>
+                </v-text-field>
+                <v-text-field
+                  v-model="addcontact_us.contact_us_username"
+                  rounded
+                  prepend-icon="mdi-account"
+                  name="name"
+                  label="ชื่อ-นามสกุล :"
+                  type="text"
+                  :rules="[(v) => !!v || 'กรุณากรอก ชื่อ-นามสกุล']"
+                  filled
+                  dense
+                  outlined
+                >
+                </v-text-field>
+                <v-text-field
+                  v-model="addcontact_us.contact_us_topic"
+                  rounded
+                  prepend-icon="mdi-format-title"
+                  name="topic"
+                  label="หัวข้อ :"
+                  type="text"
+                  :rules="[(v) => !!v || 'กรุณากรอก หัวข้อ']"
+                  filled
+                  dense
+                  outlined
+                >
+                </v-text-field>
+                <v-textarea
+                  v-model="addcontact_us.contact_us_detail"
+                  rounded
+                  prepend-icon="mdi-details"
+                  name="detail"
+                  label="รายละเอีอยด :"
+                  type="text"
+                  :rules="[(v) => !!v || 'กรุณากรอก รายละเอียด']"
+                  filled
+                  dense
+                  outlined
+                >
+                </v-textarea>
+                <div class="text-center">
+                  <v-btn rounded color="primary" @click="addcontact_ussubmit()">
+                    <v-icon>mdi-send</v-icon> ส่ง</v-btn
+                  >
+                </div>
+              </v-card-text>
+            </v-form>
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
@@ -145,9 +151,7 @@
                 </v-list-item-icon>
 
                 <v-list-item-content>
-                  <v-list-item-title
-                    ></v-list-item-title
-                  >Line official
+                  <v-list-item-title></v-list-item-title>Line official
                   <v-list-item-subtitle
                     >ชั้น 4 สำนักงานคณะกรรมการการอาชีวศึกษา
                   </v-list-item-subtitle>
@@ -165,28 +169,82 @@
                 <v-list-item-icon>
                   <v-icon>mdi-message-text</v-icon>
                 </v-list-item-icon>
-              </v-list-item>             
-          
+              </v-list-item>
             </v-list>
           </v-card>
         </v-col>
       </v-row>
+    </v-container>
+    <v-container fluid>
+      <v-snackbar
+        v-model="snackbar.show"
+        multi-line
+        vertical
+        top
+        :timeout="snackbar.timeout"
+        :color="snackbar.color"
+      >
+        <v-row>
+          <v-col cols="12" md="12">            
+              <v-icon large>{{ snackbar.icon }}</v-icon>
+          <div class="text-center">
+             {{ snackbar.text }}             
+              <v-btn dark @click="snackbar.show = false">Close</v-btn>            
+          </div>
+             
+          </v-col>
+        </v-row>
+      </v-snackbar>
     </v-container>
   </div>
 </template>
 
 <script>
 export default {
-   layout:'core',
+  layout: 'core',
   name: 'BmevecMasterContact',
 
   data() {
-    return {}
+    return {
+      ApiKey: 'bmevec2022',
+      snackbar: {
+        show: false,
+        color: '',
+        timeout: 10000,
+        icon: '',
+        text: '',
+      },
+      addcontact_us: {},
+    }
   },
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    async addcontact_ussubmit() {
+      if (this.$refs.addcontact_usform.validate()) {
+        this.addcontact_us.ApiKey = this.ApiKey
+        this.addcontact_us.contact_us_datetime = new Date()
+        let result = await this.$http.post(
+          'contact_us.insert.php',
+          this.addcontact_us
+        )
+        if (result.data.status == true) {
+          this.snackbar.icon = 'mdi-font-awesome'
+          this.snackbar.color = 'success'
+          this.snackbar.text = 'บันทึกข้อมูลเรียบร้อย'
+          this.snackbar.show = true
+          this.addcontact_us = {}
+        } else {
+          this.snackbar.icon = 'mdi-close-network'
+          this.snackbar.color = 'red'
+          this.snackbar.text = 'บันทึกข้อมูลผิดพลาด'
+          this.snackbar.show = true
+          this.addcontact_us = {}
+        }
+      }
+    },
+  },
 }
 </script>
 

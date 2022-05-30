@@ -18,8 +18,7 @@
       </v-col>
       <v-col cols="12" md="12">
         <v-card>
-          <v-card-text>
-            <base-subheading subheading="ประชาสัมพันธ์" />
+          <v-card-text>           
             <v-col cols="12" lg="12" class="text-right">
               <v-text-field
                 append-icon="mdi-magnify"

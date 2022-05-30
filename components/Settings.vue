@@ -61,48 +61,10 @@
 
           <v-divider class="my-4 secondary" />
 
-          <v-row align="center" no-gutters>
-            <v-col cols="auto"> Sidebar Image </v-col>
-
-            <v-spacer />
-
-            <v-col cols="auto">
-              <v-switch
-                v-model="showImg"
-                class="ma-0 pa-0"
-                color="secondary"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-
-          <v-divider class="my-4 secondary" />
-
-          <strong class="mb-3 d-inline-block">IMAGES</strong>
-
-          <v-item-group
-            v-model="image"
-            class="d-flex justify-space-between mb-3"
-          >
-            <v-item
-              v-for="image in images"
-              :key="image"
-              :value="image"
-              class="mx-1"
-            >
-              <template v-slot="{ active, toggle }">
-                <v-sheet
-                  :class="active && 'v-settings__item--active'"
-                  class="d-inline-block v-settings__item"
-                  @click="toggle"
-                >
-                  <v-img :src="image" height="100" width="50" />
-                </v-sheet>
-              </template>
-            </v-item>
-          </v-item-group>
-
-          <div class="my-12" />
+          <strong class="mb-3 d-inline-block">Log System</strong>
+          <div class="text-center">
+            <v-btn rounded large color="info">Log</v-btn>
+          </div>
         </v-card-text>
       </v-card>
     </v-menu>
@@ -124,12 +86,11 @@
 </template>
 
 <script>
- import Proxyable from '/node_modules/vuetify/lib/mixins/proxyable'
-  import { mapMutations, mapState } from 'vuex/'
+import Proxyable from '/node_modules/vuetify/lib/mixins/proxyable'
+import { mapMutations, mapState } from 'vuex/'
 export default {
   name: 'BmevecMasterSettings',
   mixins: [Proxyable],
-
 
   data() {
     return {
@@ -157,9 +118,9 @@ export default {
       scY: 0,
     }
   },
-      computed: {
-      ...mapState(['barImage']),
-    },
+  computed: {
+    ...mapState(['barImage']),
+  },
 
   watch: {
     color(val) {

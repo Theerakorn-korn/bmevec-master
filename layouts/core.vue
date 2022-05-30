@@ -204,7 +204,7 @@ export default {
 }
 </style>
 
-<style scoped>
+<style>
 #headerbar {
   background-color: #750606;
   background: linear-gradient(270deg, #590303 0%, #7e1010 35%, #750606 100%); border-bottom: 3px solid #d68822;

@@ -7,6 +7,7 @@
       app
       id="navigation"
       dark
+      class="back-drow"
     >
       <v-list shaped>
         <v-list-item id="list-item-head">
@@ -25,36 +26,19 @@
         <v-list-item id="list">      
           <v-list-item-content>
             <v-list-item-title class="text-center">
-              {{ user.user_firstname }}
+              {{ user.userName }}
             </v-list-item-title>
              <v-list-item-subtitle class="text-center">
-               <v-chip color="info">  {{ user.user_status }} </v-chip>
+               <v-chip color="info">  {{ user.userType }} </v-chip>
               
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-divider class="mx-4 ma-2"></v-divider>
 
-        <v-list-item-group color="#C8E6C9" v-if="user === 'null'">
+        <v-list-item-group color="#C8E6C9">
           <v-list-item
             v-for="(item, i) in items"
-            :key="i"
-            :to="item.to"
-            router
-            exact
-          >
-            <v-list-item-action>
-              <v-icon color="#750606">{{ item.icon }}</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title" />
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-        <!-- Administrator -->
-        <v-list-item-group color="#C8E6C9" v-if="user !== 'null'">
-          <v-list-item
-            v-for="(item, i) in items_admin"
             :key="i"
             :to="item.to"
             router
@@ -127,68 +111,23 @@ export default {
           to: '/',
         },
         {
-          icon: 'mdi-chart-histogram',
-          title: 'ระบบ e-MVS',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
-          title: 'ระบบควบคุมภายใน',
-          to: '/dashboardbme',
-        },
-        {
           icon: 'mdi-newspaper',
           title: 'ข่าวประชาสัมพันธ์',
           to: '/news',
         },
         {
-          icon: 'mdi-file-document',
-          title: 'เอกสารเผยแพร่',
-          to: '/documents',
-        },
-        {
-          icon: 'mdi-phone-voip',
-          title: 'ติดต่อสอบถาม',
-          to: '/contact',
-        },
-        {
           icon: 'mdi-login-variant',
-          title: 'เข้าสู่ระบบ',
-          to: '/login',
-        },
-      ],
-      items_admin: [
-        {
-          icon: 'mdi-apps',
-          title: 'หน้าแรก',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-histogram',
-          title: 'ระบบ e-MVS',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
-          title: 'ระบบควบคุมภายใน',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
-          title: 'สถานศึกษา',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
-          title: 'ข่าวประชาสัมพันธ์',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
           title: 'ผู้ใช้งานระบบ',
-          to: '/dashboardbme',
+          to: '/administrator/user',
+        },
+          {
+          icon: 'mdi-login-variant',
+          title: 'สถานศึกษา',
+          to: '/administrator/college',
         },
       ],
+    
+  
 
       miniVariant: false,
       right: true,
@@ -211,8 +150,8 @@ export default {
         this.user = 'null'
       } else {
         result = await this.$http.post('admin.php', {
-          user_name: userSession.user_name,
-          ApiKey: 'HRvec2021',
+          userName: userSession.userName,
+          ApiKey: 'bmevec2022',
         })
         this.user = result.data
         console.log(this.user)
@@ -238,10 +177,32 @@ export default {
 }
 </style>
 
-<style scoped>
-#headerbar {
-  background-color: #750606;
+<style>
+#body_card {
+  color: #750606;
+  margin-bottom: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9d64b;
   border-bottom: 3px solid #d68822;
+  border-top: 3px solid #d68822;
+}
+#layout {
+  border-radius: 15px;
+}
+#card_model {
+  background-color: #ddcfcf;
+  border-bottom: 3px solid #d68822;
+  border-radius: 15px 15px 0px 0px;
+  background-size: 120%;
+}
+#card_model_footer {
+  background-color: #ddcfcf;
+  border-top: 3px solid #d68822;
+}
+#headerbar {
+   background-color: #750606;
+  background: linear-gradient(270deg, #590303 0%, #7e1010 35%, #750606 100%); border-bottom: 3px solid #d68822;
 }
 #navigation {
   background-color: #837e7d;
@@ -253,5 +214,30 @@ export default {
 }
 #list{
   background-color: #3b3a3a;
+}
+.back-drow{
+ background: rgb(1, 25, 53);
+background: linear-gradient(0deg, rgb(35, 38, 42) 0%, rgb(80, 92, 108) 35%, rgb(175, 183, 193) 100%);
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(107, 105, 105);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #7c9cdb;
 }
 </style>

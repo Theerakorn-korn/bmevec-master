@@ -26,43 +26,43 @@
                 <v-card class="back-card-college">
                   <v-card-text>
                     <h2 class="pa-5 text-center green--text">
-                      <v-chip color="green"> สำหรับสถานศึกษา</v-chip> 
-                       <v-divider class="mx-4 ma-2 green"></v-divider>
+                      <v-chip color="green"> สำหรับสถานศึกษา</v-chip>
+                      <v-divider class="mx-4 ma-2 green"></v-divider>
                     </h2>
-                     <v-form ref="form" lazy-validation>                
-                    <v-text-field
-                      color="green"
-                      prepend-icon="mdi-account"
-                      name="login"
-                      label="ชื่อผู้ใช้งาน สถานศึกษา"
-                      type="text"
-                      v-model="user_name"
-                      :rules="[(v) => !!v || 'กรุณากรอกชื่อผู้ใช้งาน']"
-                      filled
-                      rounded
-                      dense
-                      outlined
-                    ></v-text-field>
-                    <v-text-field
-                      color="green"
-                      name="password"
-                      label="รหัสผ่าน"
-                      prepend-icon="mdi-lock-outline"
-                      id="password"
-                      v-model="user_password"
-                      filled
-                      rounded
-                      dense
-                      :rules="[(v) => !!v || 'กรุณากรอกรหัสผ่าน']"
-                      :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="show1 ? 'text' : 'password'"
-                      counter
-                      @click:append="show1 = !show1"
-                      outlined
-                    ></v-text-field>
-                    </v-form>  
+                    <v-form ref="form_college" lazy-validation>
+                      <v-text-field
+                        color="green"
+                        prepend-icon="mdi-account"
+                        name="login"
+                        label="ชื่อผู้ใช้งาน สถานศึกษา"
+                        type="text"
+                        v-model="collegeID"
+                        :rules="[(v) => !!v || 'กรุณากรอกชื่อผู้ใช้งาน']"
+                        filled
+                        rounded
+                        dense
+                        outlined
+                      ></v-text-field>
+                      <v-text-field
+                        color="green"
+                        name="password"
+                        label="รหัสผ่าน"
+                        prepend-icon="mdi-lock-outline"
+                        id="password"
+                        v-model="collegePassword"
+                        filled
+                        rounded
+                        dense
+                        :rules="[(v) => !!v || 'กรุณากรอกรหัสผ่าน']"
+                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :type="show1 ? 'text' : 'password'"
+                        counter
+                        @click:append="show1 = !show1"
+                        outlined
+                      ></v-text-field>
+                    </v-form>
                     <div class="text-center">
-                      <v-btn rounded color="primary" large @click="userLogin()">
+                      <v-btn rounded color="primary" large @click="userLogin_college()">
                         <v-icon>mdi-login-variant</v-icon> เข้าสู่ระบบ</v-btn
                       >
                     </div>
@@ -75,45 +75,51 @@
                   <v-card-text>
                     <h2 class="pa-5 text-center green--text">
                       <v-chip color="info"> สำหรับส่วนกลาง</v-chip>
-                        <v-divider class="mx-4 ma-2 info"></v-divider>
+                      <v-divider class="mx-4 ma-2 info"></v-divider>
                     </h2>
-
-                    <v-text-field
-                      color="green"
-                      prepend-icon="mdi-account"
-                      name="login"
-                      label="ชื่อผู้ใช้งาน ส่วนกลาง"
-                      type="text"
-                    
-                      :rules="[(v) => !!v || 'กรุณากรอกชื่อผู้ใช้งาน']"
-                      filled
-                      rounded
-                      dense
-                      outlined
-                    ></v-text-field>
-                    <v-text-field
-                      color="green"
-                      name="password"
-                      label="รหัสผ่าน"
-                      prepend-icon="mdi-lock-outline"
-                      id="password"                   
-                      filled
-                      rounded
-                      dense
-                      :rules="[(v) => !!v || 'กรุณากรอกรหัสผ่าน']"
-                      :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="show1 ? 'text' : 'password'"
-                      counter
-                      @click:append="show1 = !show1"
-                      outlined
-                    ></v-text-field>
+                    <v-form ref="form_user" lazy-validation>
+                      <v-text-field
+                        v-model="userName"
+                        color="green"
+                        prepend-icon="mdi-account"
+                        name="login"
+                        label="ชื่อผู้ใช้งาน ส่วนกลาง"
+                        type="text"
+                        :rules="[(v) => !!v || 'กรุณากรอกชื่อผู้ใช้งาน']"
+                        filled
+                        rounded
+                        dense
+                        outlined
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="userPassword"
+                        color="green"
+                        name="password"
+                        label="รหัสผ่าน"
+                        prepend-icon="mdi-lock-outline"
+                        id="password"
+                        filled
+                        rounded
+                        dense
+                        :rules="[(v) => !!v || 'กรุณากรอกรหัสผ่าน']"
+                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :type="show1 ? 'text' : 'password'"
+                        counter
+                        @click:append="show1 = !show1"
+                        outlined
+                      ></v-text-field>
+                    </v-form>
                     <div class="text-center">
-                      <v-btn rounded color="primary" large>
+                      <v-btn
+                        rounded
+                        color="primary"
+                        large
+                        @click="userLogin_user()"
+                      >
                         <v-icon>mdi-login-variant</v-icon> เข้าสู่ระบบ</v-btn
                       >
-                        <v-divider class="mx-4 ma-2 info"></v-divider>
+                      <v-divider class="mx-4 ma-2 info"></v-divider>
                     </div>
-                    
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -121,89 +127,95 @@
           </template>
         </v-toolbar>
       </v-card>
-       <v-snackbar v-model="dialog" centered>
-      <v-card-text>
-        {{ dialog_msg }}
-      </v-card-text>
+      <v-snackbar v-model="dialog" top>
+        <v-card-text>
+         <h3>{{ dialog_msg }}</h3> 
+        </v-card-text>
 
-      <template v-slot:action="{ attrs }">
-        <v-btn color="red" text v-bind="attrs" @click="dialog = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
+        <template v-slot:action="{ attrs }">
+          <v-btn color="red" text v-bind="attrs" @click="dialog = false"
+            >Close</v-btn
+          >
+        </template>
+      </v-snackbar>
     </v-container>
   </div>
 </template>
 
 <script>
 export default {
-   layout:'core',
+  layout: 'core',
   name: 'BmevecMasterLogin',
 
   data() {
     return {
       show1: false,
       tabs: null,
-      user_name: "",
-      user_password: "",
-       dialog: false,
-      dialog_msg: "",
-      snackbar_timeout: 10000
+      collegeID:'',
+      collegePassword:'',
+      userName: '',
+      userPassword: '',
+      dialog: false,
+      dialog_msg: '',
+      snackbar_timeout: 10000,
     }
   },
 
-  mounted() {
-    
-  },
+  mounted() {},
 
   methods: {
-  async userLogin() {
-      if (this.$refs.form.validate()) {
-        let result = await this.$http.post("login.php?crud=admin", {
-          user_name: this.user_name,
-          user_password: this.user_password
-        });
-        if (result.data.user_status) {
-          let user = result.data;
-          user.system_lock = false;
-          sessionStorage.setItem("user", JSON.stringify(user));
-          if (user.user_status == "A") {
-          
-          /* this.data_syslog.ApiKey = this.ApiKey;
-          this.data_syslog.user_account = this.user_name;
-          this.data_syslog.event_log = "login-admin";
-          this.data_syslog.page_log = "loginAdmin";
-          this.data_syslog.table_log = "";
-          this.data_syslog.date_times = this.date_today_log;          
-
-          await this.$http.post('data_syslog.insert.php', this.data_syslog) */
-
-            sessionStorage.setItem("user", JSON.stringify(user));
-           
-            this.$router.push("/administrator");
-            
-            
+    async userLogin_college() {
+      if (this.$refs.form_college.validate()) {
+        let result = await this.$http.post('login.php?crud=college', {
+          collegeID: this.collegeID,
+          collegePassword: this.collegePassword,
+        })
+        console.log(result.data)
+        if (result.data.collegeStatus) {
+          let user = result.data        
+          sessionStorage.setItem('user', JSON.stringify(user))
+          if (user.collegeStatus == 'open') {
+            sessionStorage.setItem('user', JSON.stringify(user))
+            this.$router.push('/colleges')
+          } else {
+            sessionStorage.clear()
+            this.dialog = true
+            this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
           }
-          //administrator IPA2
-          else if (user.user_status == "B") {
-            sessionStorage.setItem("user", JSON.stringify(user));
-            this.$router.push("/colleges");
-          } //college
-          else if (user.user_status == "C") this.$router.push("/ive");
-          //Vocational Education Institution
-          else if (user.user_status == "D") this.$router.push("/personnel");
-          //College personnel
-          else if (user.user_status == "G") this.$router.push("/vecprovince");
-          //Vocation College Province
-          else {
-            sessionStorage.clear();
-            this.dialog = true;
-            this.dialog_msg = "ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง";
+        }
+        else
+        {
+           sessionStorage.clear()
+            this.dialog = true
+            this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
+        }
+      }
+    },
+
+    async userLogin_user() {
+      if (this.$refs.form_user.validate()) {
+        let result = await this.$http.post('login.php?crud=user', {
+          userName: this.userName,
+          userPassword: this.userPassword,
+        })
+        console.log(result.data)
+        if (result.data.userType) {
+          let user = result.data          
+          sessionStorage.setItem('user', JSON.stringify(user))
+          if (user.userType == 'VecAdmin') {
+            sessionStorage.setItem('user', JSON.stringify(user))
+            this.$router.push('/administrator')
+          } else if (user.userType == 'Vec') {
+            sessionStorage.setItem('user', JSON.stringify(user))
+            this.$router.push('/administrator')
+          } else {
+            sessionStorage.clear()
+            this.dialog = true
+            this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
           }
         }
       }
-    },    
+    },
   },
 }
 </script>
@@ -222,14 +234,19 @@ export default {
 input {
   border-color: #3abac8;
 }
-.back-drow{
- background: rgb(1, 25, 53);
-background: linear-gradient(0deg, rgb(35, 38, 42) 0%, rgb(80, 92, 108) 35%, rgb(175, 183, 193) 100%);
+.back-drow {
+  background: rgb(1, 25, 53);
+  background: linear-gradient(
+    0deg,
+    rgb(35, 38, 42) 0%,
+    rgb(80, 92, 108) 35%,
+    rgb(175, 183, 193) 100%
+  );
 }
-.back-card-college{  
-background: #d7f5d3;
+.back-card-college {
+  background: #d7f5d3;
 }
-.back-card-admin{  
-background: #f5e4d3;
+.back-card-admin {
+  background: #f5e4d3;
 }
 </style>
