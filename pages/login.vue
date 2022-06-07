@@ -12,12 +12,12 @@
             <v-tabs v-model="tabs" grow id="tabs">
               <v-tabs-slider></v-tabs-slider>
 
-              <v-tab class="white--text">
+              <v-tab class="green--text">
                 <v-icon class="pa-2">mdi-school</v-icon>
                 สถานศึกษา
               </v-tab>
 
-              <v-tab class="white--text">
+              <v-tab class="orange--text">
                 <v-icon class="pa-2">mdi-domain</v-icon>
                 หน่วยงานส่วนกลาง
               </v-tab>
@@ -174,7 +174,7 @@ export default {
         if (result.data.collegeStatus) {
           let user = result.data        
           sessionStorage.setItem('user', JSON.stringify(user))
-          if (user.collegeStatus == 'open') {
+          if (user.collegeStatus == 'Open') {
             sessionStorage.setItem('user', JSON.stringify(user))
             this.$router.push('/colleges')
           } else {
@@ -222,7 +222,7 @@ export default {
 
 <style lang="scss" scoped>
 #tabs {
-  background-color: #3abac8;
+  background-color: #cdeaee;
 }
 
 .card {

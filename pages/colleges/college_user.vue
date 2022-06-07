@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-container>
+    <v-container fluid>
       <v-card id="body_card">
         <v-card-text class="font-weight-medium">
-          <h3><v-icon>mdi-domain</v-icon> สถานศึกษา</h3>
+          <h3><v-icon>mdi-account-multiple</v-icon> ผู้ใช้งานระบบ ระดับสถานศึกษา</h3>
         </v-card-text>
       </v-card>
       <v-card>
@@ -21,7 +21,7 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6" class="text-right">
-              <v-btn rounded large color="primary" @click.native="collegeAdd()">
+              <v-btn rounded large color="primary" @click.native="college_userAdd()">
                 <v-icon class="pa-2">mdi-plus-circle-outline</v-icon>เพิ่มรายการ
               </v-btn>
             </v-col>
@@ -32,9 +32,20 @@
           color="success"
           :loading="loading"
           :headers="headers"
-          :items="colleges"
+          :items="college_users"
           :search="search"
         >
+         <template v-slot:[`item.college_user_type`]="{ item }">
+            <div class="text-center">
+             <v-chip v-if="item.college_user_type ==='information'">
+             ประชาสัมพันธ์
+             </v-chip>
+              <v-chip v-if="item.college_user_type ==='control'">
+             รายงานการควบคุมภายใน
+             </v-chip>
+            </div>
+          </template>
+
           <template v-slot:[`item.actions`]="{ item }">
             <div class="text-center">
               <v-btn
@@ -42,7 +53,7 @@
                 fab
                 dark
                 color="warning"
-                @click.stop="collegeEdit(item.collegeID)"
+                @click.stop="college_userEdit(item.college_user_id)"
               >
                 <v-icon dark> mdi-pencil </v-icon>
               </v-btn>
@@ -55,7 +66,7 @@
               fab
               dark
               color="red"
-              @click.stop="collegeDelete(item.collegeID)"
+              @click.stop="college_userDelete(item.college_user_id)"
             >
               <v-icon dark> mdi-delete </v-icon>
             </v-btn>
@@ -70,36 +81,36 @@
         </v-data-table>
       </v-card>
 
-      <!--addcollegedialog  -->
+      <!--addcollege_userdialog  -->
       <v-layout row justify-center>
-        <v-dialog v-model="addcollegedialog" persistent max-width="50%">
+        <v-dialog v-model="addcollege_userdialog" persistent max-width="50%">
           <v-card id="layout">
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
                 <v-icon color="green" class="pa-2" large
-                  >mdi-domain-plus</v-icon
+                  >mdi-account-multiple-plus</v-icon
                 >
                 <v-toolbar-title class="green--text pl-0">
-                  เพิ่มข้อมูลสถานศึกษา
+                  เพิ่มข้อมูลผู้ใช้งานระบบ
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn color="" icon @click.stop="addcollegedialog = false">
+                <v-btn color="" icon @click.stop="addcollege_userdialog = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </v-app-bar>
             </v-card>
 
             <v-card-text>
-              <v-form ref="addcollegeform" lazy-validation>
+              <v-form ref="addcollege_userform" lazy-validation>
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex md12>
                       <v-select
-                        :items="collegetypes"
-                        item-text="collegetypeName"
-                        item-value="collegetypeID"
-                        v-model="addcollege.collegetypeID"
-                        label="ประเภทสถานศึกษา"
+                        :items="college_user_types_select"
+                        item-text="text"
+                        item-value="value"
+                        v-model="addcollege_user.college_user_type"
+                        label="ประเภทผู้ใช้งานระบบ"
                         prepend-icon="mdi-account-star"
                         required
                         :rules="[(v) => !!v || '']"
@@ -107,10 +118,10 @@
                         outlined
                       ></v-select>
                     </v-flex>
-                    <v-flex md6>
+                      <v-flex md6>
                       <v-text-field
-                        label="รหัสสถานศึกษา"
-                        v-model="addcollege.collegeID"
+                        label="รหัสบัตรประชาชน"
+                        v-model="addcollege_user.college_user_idcard"
                         prepend-icon="mdi-account"
                         required
                         :rules="[(v) => !!v || '']"
@@ -120,8 +131,8 @@
                     </v-flex>
                     <v-flex md6>
                       <v-text-field
-                        label="ชื่อสถานศึกษา"
-                        v-model="addcollege.collegeName"
+                        label="ชื่อในการเข้าใช้งาน"
+                        v-model="addcollege_user.college_user_username"
                         prepend-icon="mdi-account"
                         required
                         :rules="[(v) => !!v || '']"
@@ -131,8 +142,8 @@
                     </v-flex>
                     <v-flex md6>
                       <v-text-field
-                        label="รหัสผ่าน"
-                        v-model="addcollege.collegePassword"
+                        label="Password"
+                        v-model="addcollege_user.college_user_password"
                         prepend-icon="mdi-account-key"
                         type="password"
                         require
@@ -143,28 +154,23 @@
                     </v-flex>
                     <v-flex md6>
                       <v-text-field
-                        label="ยืนยันรหัสผ่าน"
-                        v-model="addcollege.college_confirmpassword"
+                        label="Confirm Password"
+                        v-model="addcollege_user.college_user_confirmpassword"
                         prepend-icon="mdi-account-key"
                         type="password"
                         required
-                        :rules="[(v) => v == addcollege.collegePassword]"
+                        :rules="[(v) => v == addcollege_user.college_user_password]"
                         rounded
                         outlined
                       ></v-text-field>
                     </v-flex>
-                    <v-flex md6>
-                      <v-switch
-                        v-model="addcollege.collegeStatus_sw"
-                        inset
-                        label="สถานะ :"
-                        prepend-icon="mdi-account-star"
-                      ></v-switch>
+                    <v-flex xs12>
+                      <v-divider></v-divider>
                     </v-flex>
                     <v-flex md6>
                       <v-text-field
-                        label="E-mail"
-                        v-model="addcollege.collegeContactEmail"
+                        label="ชื่อ"
+                        v-model="addcollege_user.college_user_fristname"
                         prepend-icon="mdi-account-box"
                         require
                         :rules="[(v) => !!v || '']"
@@ -173,34 +179,38 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex md6>
-                      <v-autocomplete
-                        :items="provinces"
-                        item-text="provinceName"
-                        item-value="provinceID"
-                        v-model="addcollege.provinceID"
-                        label="จังหวัด"
-                        prepend-icon="mdi-account-star"
+                      <v-text-field
+                        label="นามสกุล"
+                        v-model="addcollege_user.college_user_lastname"
+                        prepend-icon="mdi-account-box"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
                         outlined
-                      ></v-autocomplete>
+                      ></v-text-field>
                     </v-flex>
-
                     <v-flex md6>
-                      <v-autocomplete
-                        :items="prefectures"
-                        item-text="prefectureName"
-                        item-value="prefectureID"
-                        v-model="addcollege.prefectureID"
-                        label="อำเภอ"
-                        prepend-icon="mdi-account-star"
+                      <v-text-field
+                        label="เบอร์โทร"
+                        v-model="addcollege_user.college_user_tel"
+                        prepend-icon="mdi-cellphone-basic"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
                         outlined
-                      ></v-autocomplete>
+                      ></v-text-field>
                     </v-flex>
+                    <v-flex md6>
+                      <v-text-field
+                        label="E-mail"
+                        v-model="addcollege_user.college_user_email"
+                        prepend-icon="mdi-email"
+                        required
+                        :rules="[(v) => !!v || '']"
+                        rounded
+                        outlined
+                      ></v-text-field>
+                    </v-flex>                
                   </v-layout>
                 </v-container>
               </v-form>
@@ -210,7 +220,7 @@
               <v-btn
                 class="pa-4"
                 large
-                @click.stop="addcollegedialog = false"
+                @click.stop="addcollege_userdialog = false"
                 rounded
                 ><v-icon dark>mdi-close</v-icon> ยกเลิก</v-btn
               >
@@ -218,7 +228,7 @@
                 class="pa-4"
                 large
                 color="success"
-                @click.stop="addcollegeSubmit()"
+                @click.stop="addcollege_userSubmit()"
                 rounded
               >
                 <v-icon dark>mdi-content-save</v-icon>&nbsp;&nbsp;บันทึก
@@ -228,9 +238,9 @@
         </v-dialog>
       </v-layout>
 
-      <!-- V-model deletecollegedialog -->
+      <!-- V-model deletecollege_userdialog -->
       <v-layout row justify-center>
-        <v-dialog v-model="deletecollegedialog" persistent max-width="40%">
+        <v-dialog v-model="deletecollege_userdialog" persistent max-width="40%">
           <v-card id="layout">
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
@@ -238,24 +248,22 @@
                   >mdi-account-minus</v-icon
                 >
                 <v-toolbar-title class="red--text pl-0">
-                  ลบข้อมูลสถานศึกษา
+                  ลบข้อมูลผู้ใช้งานระบบ
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn color="" icon @click.stop="deletecollegedialog = false">
+                <v-btn color="" icon @click.stop="deletecollege_userdialog = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </v-app-bar>
             </v-card>
             <v-card-text>
-              <v-form ref="deletecollegeform" lazy-validation>
+              <v-form ref="deletecollege_userform" lazy-validation>
                 <v-container grid-list-md>
                   <v-layout wrap class="pa-4">
                     <v-flex xs12>
                       <h2>
-                        ยืนยันการลบข้อมูล
-                        <span class="red--text">{{
-                          editcollege.collegeName
-                        }}</span>
+                        ยืนยันการลบข้อมูลผู้ใช้
+                        <span class="red--text">{{ editcollege_user.college_user_username }}</span>
                       </h2>
                     </v-flex>
                   </v-layout>
@@ -265,14 +273,14 @@
 
             <v-card-actions id="card_model_footer" class="pa-4">
               <v-spacer></v-spacer>
-              <v-btn rounded large @click.stop="deletecollegedialog = false"
+              <v-btn rounded large @click.stop="deletecollege_userdialog = false"
                 ><v-icon dark>mdi-close</v-icon>ยกเลิก</v-btn
               >
               <v-btn
                 rounded
                 large
                 color="red darken-3"
-                @click.stop="deletecollegeSubmit()"
+                @click.stop="deletecollege_userSubmit()"
                 dark
               >
                 <v-icon dark>mdi-delete</v-icon>&nbsp;ลบ
@@ -282,9 +290,9 @@
         </v-dialog>
       </v-layout>
 
-      <!--editcollegedialog  -->
+      <!--editcollege_userdialog  -->
       <v-layout row justify-center>
-        <v-dialog v-model="editcollegedialog" persistent max-width="50%">
+        <v-dialog v-model="editcollege_userdialog" persistent max-width="50%">
           <v-card id="layout">
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
@@ -292,37 +300,38 @@
                   >mdi-account-edit</v-icon
                 >
                 <v-toolbar-title class="warning--text pl-0">
-                  แก้ไขข้อมูลสถานศึกษา
+                  แก้ไขข้อมูลผู้ใช้งานระบบ
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn color="" icon @click.stop="editcollegedialog = false">
+                <v-btn color="" icon @click.stop="editcollege_userdialog = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </v-app-bar>
             </v-card>
 
             <v-card-text>
-              <v-form ref="editcollegeform" lazy-validation>
+              <v-form ref="editcollege_userform" lazy-validation>
                 <v-container grid-list-md>
-                  <v-layout wrap>
-                    <v-flex md12>
+                  <v-layout wrap>                 
+
+                   <v-flex md12>
                       <v-select
-                        :items="collegetypes"
-                        item-text="collegetypeName"
-                        item-value="collegetypeID"
-                        v-model="editcollege.collegetypeID"
-                        label="ประเภทสถานศึกษา"
+                        :items="college_user_types_select"
+                        item-text="text"
+                        item-value="value"
+                        v-model="editcollege_user.college_user_type"
+                        label="ประเภทผู้ใช้งานระบบ"
                         prepend-icon="mdi-account-star"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
                         outlined
                       ></v-select>
-                    </v-flex>                   
-                    <v-flex md6>
+                    </v-flex>
+                      <v-flex md6>
                       <v-text-field
-                        label="ชื่อสถานศึกษา"
-                        v-model="editcollege.collegeName"
+                        label="รหัสบัตรประชาชน"
+                        v-model="editcollege_user.college_user_idcard"
                         prepend-icon="mdi-account"
                         required
                         :rules="[(v) => !!v || '']"
@@ -331,40 +340,45 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex md6>
-                      <v-switch
-                        v-model="editcollege.collegeStatus_sw"
-                        inset
-                        label="สถานะ :"
-                        prepend-icon="mdi-account-star"
-                      ></v-switch>
-                    </v-flex>
-                    <v-flex md6>
                       <v-text-field
-                        label="รหัสผ่าน"
-                        v-model="editcollege.collegePassword"
-                        prepend-icon="mdi-account-key"
-                        type="password"
-                        require
-                        rounded
-                        outlined
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex md6>
-                      <v-text-field
-                        label="ยืนยันรหัสผ่าน"
-                        v-model="editcollege.college_confirmpassword"
-                        prepend-icon="mdi-account-key"
-                        type="password"
+                        label="ชื่อในการเข้าใช้งาน"
+                        v-model="editcollege_user.college_user_username"
+                        prepend-icon="mdi-account"
                         required
+                        :rules="[(v) => !!v || '']"
                         rounded
                         outlined
                       ></v-text-field>
                     </v-flex>
-                    
-                    <v-flex md12>
+                    <v-flex md6>
                       <v-text-field
-                        label="E-mail"
-                        v-model="editcollege.collegeContactEmail"
+                        label="Password"
+                        v-model="editcollege_user.college_user_password"
+                        prepend-icon="mdi-account-key"
+                        type="password"
+                        require                       
+                        rounded
+                        outlined
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex md6>
+                      <v-text-field
+                        label="Confirm Password"
+                        v-model="editcollege_user.college_user_confirmpassword"
+                        prepend-icon="mdi-account-key"
+                        type="password"
+                        required                       
+                        rounded
+                        outlined
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-divider></v-divider>
+                    </v-flex>
+                    <v-flex md6>
+                      <v-text-field
+                        label="ชื่อ"
+                        v-model="editcollege_user.college_user_fristname"
                         prepend-icon="mdi-account-box"
                         require
                         :rules="[(v) => !!v || '']"
@@ -373,34 +387,38 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex md6>
-                      <v-autocomplete
-                        :items="provinces"
-                        item-text="provinceName"
-                        item-value="provinceID"
-                        v-model="editcollege.provinceID"
-                        label="จังหวัด"
-                        prepend-icon="mdi-account-star"
+                      <v-text-field
+                        label="นามสกุล"
+                        v-model="editcollege_user.college_user_lastname"
+                        prepend-icon="mdi-account-box"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
                         outlined
-                      ></v-autocomplete>
+                      ></v-text-field>
                     </v-flex>
-
                     <v-flex md6>
-                      <v-autocomplete
-                        :items="prefectures"
-                        item-text="prefectureName"
-                        item-value="prefectureID"
-                        v-model="editcollege.prefectureID"
-                        label="อำเภอ"
-                        prepend-icon="mdi-account-star"
+                      <v-text-field
+                        label="เบอร์โทร"
+                        v-model="editcollege_user.college_user_tel"
+                        prepend-icon="mdi-cellphone-basic"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
                         outlined
-                      ></v-autocomplete>
+                      ></v-text-field>
                     </v-flex>
+                    <v-flex md6>
+                      <v-text-field
+                        label="E-mail"
+                        v-model="editcollege_user.college_user_email"
+                        prepend-icon="mdi-email"
+                        required
+                        :rules="[(v) => !!v || '']"
+                        rounded
+                        outlined
+                      ></v-text-field>
+                    </v-flex>                
                   </v-layout>
                 </v-container>
               </v-form>
@@ -410,7 +428,7 @@
               <v-btn
                 class="pa-4"
                 large
-                @click.stop="editcollegedialog = false"
+                @click.stop="editcollege_userdialog = false"
                 rounded
                 ><v-icon dark>mdi-close</v-icon> ยกเลิก</v-btn
               >
@@ -418,7 +436,7 @@
                 class="pa-4"
                 large
                 color="warning"
-                @click.stop="editcollegeSubmit()"
+                @click.stop="editcollege_userSubmit()"
                 rounded
               >
                 <v-icon dark>mdi-pencil</v-icon>&nbsp;&nbsp;แก้ไข
@@ -452,15 +470,15 @@
 </template>
 <script>
 export default {
-  layout: 'administrators',
+   layout: 'colleges',
   data() {
     return {
       loading: true,
       ApiKey: 'bmevec2022',
       valid: true,
-      addcollegedialog: false,
-      editcollegedialog: false,
-      deletecollegedialog: false,
+      addcollege_userdialog: false,
+      editcollege_userdialog: false,
+      deletecollege_userdialog: false,
       snackbar: {
         show: false,
         color: '',
@@ -468,19 +486,22 @@ export default {
         icon: '',
         text: '',
       },
-      colleges: [],
-      addcollege: {},
-      editcollege: {},
+      college_users: [],
+      addcollege_user: {},
+      editcollege_user: {},
       search: '',
       pagination: {},
       headers: [
-        { text: 'ลำดับ', align: 'center', value: 'collegeID' },
-        { text: 'ชื่อผู้ใช้งาน', align: 'left', value: 'collegeName' },
-        { text: 'สถานะ', align: 'center', value: 'collegeStatus' },
-        { text: 'E-mail', align: 'left', value: 'collegeContactEmail' },
-        { text: 'อำเภอ', align: 'left', value: 'prefectureName' },
-        { text: 'จังหวัด', align: 'left', value: 'provinceName' },
-        { text: 'ประเภท', align: 'left', value: 'collegetypeName' },
+        { text: 'ลำดับ', align: 'center', value: 'college_user_id' },
+         { text: 'รหัสบัตรประชาชน', align: 'center', value: 'college_user_idcard' },
+        { text: 'ชื่อผู้ใช้งาน', align: 'center', value: 'college_user_username' },
+        { text: 'ประเภท', align: 'center', value: 'college_user_fristname' },
+        { text: 'ชื่อ', align: 'center', value: 'college_user_lastname' },
+        { text: 'นามสกุล', align: 'center', value: 'college_user_lastname' },
+        { text: 'ประเภท', align: 'center', value: 'college_user_type' },
+        { text: 'E-mail', align: 'center', value: 'college_user_email' },
+        { text: 'เบอร์โทร', align: 'center', value: 'college_user_tel' },
+       
         {
           text: 'แก้ไข',
           align: 'center',
@@ -504,78 +525,71 @@ export default {
         },
       ],
       provinces: [],
-      prefectures: [],
-      collegetypes: [],
-      regions: [],
+      college_user_types: [],
       data_syslog: {},
+      college_user_types_select: [
+        { text: 'ประชาสัมพันธ์', value: 'information' },
+        { text: 'รายงานการควบคุมภายใน', value: 'control' },       
+      ],
+       user: [],
     }
   },
   async mounted() {
-    this.collegeQueryAll()
-    this.collegetypeQueryAll()
-    this.provinceQueryAll()
+    await this.users()
+    await this.college_userQueryAll()
   },
   methods: {
-    async collegeQueryAll() {
-      this.loading = true
-      let result = await this.$http
-        .post('college.php', {
-          ApiKey: this.ApiKey,
-        })
-        .finally(() => (this.loading = false))
-      this.colleges = result.data
-    },
-    async collegetypeQueryAll() {
-      let result = await this.$http.post('collegetype.php', {
+       async users() {
+      let result
+      let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+      result = await this.$http.post('college.php', {
         ApiKey: this.ApiKey,
+        collegeID: userSession.collegeID,
       })
-      this.collegetypes = result.data
-    },
-    async provinceQueryAll() {
-      let result = await this.$http.post('province.php', {
-        ApiKey: this.ApiKey,
-      })
-      this.provinces = result.data
-    },
-    async prefectureQueryAll(provinceID) {
-      let result = await this.$http.post('prefecture.php', {
-        provinceID: provinceID,
-        ApiKey: this.ApiKey,
-      })
-      this.prefectures = result.data
+      this.user = result.data
     },
 
-    async collegeAdd() {
-      this.addcollege = {}
-      this.addcollegedialog = true
+    async college_userQueryAll() {
+      this.loading = true
+      let result = await this.$http
+        .post('college_user.php', {
+          ApiKey: this.ApiKey,
+          college_user_code: this.user.collegeID
+        })
+        .finally(() => (this.loading = false))
+      this.college_users = result.data          
     },
-    async addcollegeSubmit() {
-      if (this.$refs.addcollegeform.validate()) {
-        this.addcollege.ApiKey = this.ApiKey
-        if (this.addcollege.collegeStatus_sw == true) {
-          this.addcollege.collegeStatus = 'Open'
-        } else {
-          this.addcollege.collegeStatus = 'Close'
-        }
-        let result = await this.$http.post(
-          'college.insert.php',
-          this.addcollege
-        )
+
+
+    async college_userAdd() {
+      this.addcollege_user = {}
+      this.addcollege_userdialog = true
+    },
+    async addcollege_userSubmit() {
+      if (this.$refs.addcollege_userform.validate()) {
+        this.addcollege_user.ApiKey = this.ApiKey
+        this.addcollege_user.college_user_code = this.user.collegeID      
+        let result = await this.$http.post('college_user.insert.php', this.addcollege_user)
+      
         if (result.data.status == true) {
-          this.college = result.data
+          this.college_user = result.data
           this.snackbar.icon = 'mdi-font-awesome'
           this.snackbar.color = 'success'
           this.snackbar.text = 'บันทึกข้อมูลเรียบร้อย'
           this.snackbar.show = true
-          this.collegeQueryAll()
-          let userSession =
-            JSON.parse(sessionStorage.getItem('user')) || 0
+          this.college_userQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.user_account = userSession.collegeID
           this.data_syslog.event_log = 'insert'
-          this.data_syslog.page_log = 'college'
-          this.data_syslog.table_log = 'college'
-          this.data_syslog.detail_log = this.addcollege.collegeName
+          this.data_syslog.page_log = 'college_user'
+          this.data_syslog.table_log = 'college_user'
+          this.data_syslog.detail_log =
+            this.addcollege_user.college_user_username +
+            ' ' +
+            this.addcollege_user.college_user_fristname +
+            ' ' +
+            this.addcollege_user.college_user_lastname
           this.data_syslog.date_times = this.date_today_log
           await this.$http.post('data_syslog.insert.php', this.data_syslog)
         } else {
@@ -583,54 +597,44 @@ export default {
           this.snackbar.color = 'red'
           this.snackbar.text = 'บันทึกข้อมูลผิดพลาด'
           this.snackbar.show = true
-          this.collegeQueryAll()
+          this.college_userQueryAll()
         }
-        this.addcollegedialog = false
+        this.addcollege_userdialog = false
       }
     },
-    async collegeEdit(collegeID) {
-      let result = await this.$http.post('college.php', {
+    async college_userEdit(college_user_id) {
+      let result = await this.$http.post('college_user.php', {
         ApiKey: this.ApiKey,
-        collegeID: collegeID,
+        college_user_id: college_user_id,
       })
-
-      this.editcollege = result.data
-      if (this.editcollege.collegeStatus == 'Open')
-        this.editcollege.collegeStatus_sw = true
-      else this.editcollege.collegeStatus_sw = false
-
-      this.editcollege.collegePassword = ''
-      this.editcollegedialog = true
+      this.editcollege_user = result.data
+      this.editcollege_user.college_user_password = ''
+      this.editcollege_userdialog = true
     },
-    async editcollegeSubmit() {
-      if (this.$refs.editcollegeform.validate()) {
-        this.editcollege.ApiKey = this.ApiKey
-        if (this.editcollege.collegePassword == '')
-          delete this.editcollege.collegePassword
-        if (this.editcollege.collegeStatus_sw == true) {
-          this.editcollege.collegeStatus = 'Open'
-        } else {
-          this.editcollege.collegeStatus = 'Close'
-        }      
-        let result = await this.$http.post(
-          'college.update.php',
-          this.editcollege
-        )
+    async editcollege_userSubmit() {
+      if (this.$refs.editcollege_userform.validate()) {
+        this.editcollege_user.ApiKey = this.ApiKey
+        if (this.editcollege_user.college_user_password == '') delete this.editcollege_user.college_user_password
+        let result = await this.$http.post('college_user.update.php', this.editcollege_user)
         if (result.data.status == true) {
-          this.college = result.data
+          this.college_user = result.data
           this.snackbar.icon = 'mdi-font-awesome'
           this.snackbar.color = 'success'
           this.snackbar.text = 'แก้ไขข้อมูลเรียบร้อย'
           this.snackbar.show = true
-          this.collegeQueryAll()
-          let userSession =
-            JSON.parse(sessionStorage.getItem('user')) || 0
+          this.college_userQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.user_account = userSession.collegeID
           this.data_syslog.event_log = 'update'
-          this.data_syslog.page_log = 'college'
-          this.data_syslog.table_log = 'college'
-          this.data_syslog.detail_log = this.editcollege.collegeName
+          this.data_syslog.page_log = 'college_user'
+          this.data_syslog.table_log = 'college_user'
+          this.data_syslog.detail_log =
+            this.editcollege_user.college_user_username +
+            ' ' +
+            this.editcollege_user.college_user_fristname +
+            ' ' +
+            this.editcollege_user.college_user_lastname
           this.data_syslog.date_times = this.date_today_log
           await this.$http.post('data_syslog.insert.php', this.data_syslog)
         } else {
@@ -639,44 +643,40 @@ export default {
           this.snackbar.text = 'แก้ไขข้อมูลผิดพลาด'
           this.snackbar.show = true
         }
-        this.editcollegedialog = false
+        this.editcollege_userdialog = false
       }
     },
-    async collegeDelete(collegeID) {
-      let result = await this.$http.post('college.php', {
+    async college_userDelete(college_user_id) {
+      let result = await this.$http.post('college_user.php', {
         ApiKey: this.ApiKey,
-        collegeID: collegeID,
+        college_user_id: college_user_id,
       })
-      this.editcollege = result.data
-      this.deletecollegedialog = true
+      this.editcollege_user = result.data
+      this.deletecollege_userdialog = true
     },
-    async deletecollegeSubmit() {
-      if (this.$refs.deletecollegeform.validate()) {
-        this.editcollege.ApiKey = this.ApiKey
-        let result = await this.$http.post(
-          'college.delete.php',
-          this.editcollege
-        )
+    async deletecollege_userSubmit() {
+      if (this.$refs.deletecollege_userform.validate()) {
+        this.editcollege_user.ApiKey = this.ApiKey
+        let result = await this.$http.post('college_user.delete.php', this.editcollege_user)
         if (result.data.status == true) {
-          this.college = result.data
+          this.college_user = result.data
           this.snackbar.icon = 'mdi-font-awesome'
           this.snackbar.color = 'success'
           this.snackbar.text = 'ลบข้อมูลเรียบร้อย'
           this.snackbar.show = true
-          this.collegeQueryAll()
-          let userSession =
-            JSON.parse(sessionStorage.getItem('user')) || 0
+          this.college_userQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.user_account = userSession.collegeID
           this.data_syslog.event_log = 'delete'
-          this.data_syslog.page_log = 'college'
-          this.data_syslog.table_log = 'college'
+          this.data_syslog.page_log = 'college_user'
+          this.data_syslog.table_log = 'college_user'
           this.data_syslog.detail_log =
-            this.editcollege.collegeName +
+            this.editcollege_user.college_user_username +
             ' ' +
-            this.editcollege.collegeFirstname +
+            this.editcollege_user.college_user_fristname +
             ' ' +
-            this.editcollege.collegeLastname
+            this.editcollege_user.college_user_lastname
           this.data_syslog.date_times = this.date_today_log
           await this.$http.post('data_syslog.insert.php', this.data_syslog)
         } else {
@@ -685,7 +685,7 @@ export default {
           this.snackbar.text = 'ลบข้อมูลผิดพลาด'
           this.snackbar.show = true
         }
-        this.deletecollegedialog = false
+        this.deletecollege_userdialog = false
       }
     },
   },
@@ -709,20 +709,7 @@ export default {
       today = dd + '/' + mm + '/' + yyyy + '/' + time
       return today
     },
-    addcollegeProvinceChange() {
-      return this.addcollege.provinceID
-    },
-    editCollegeProvinceChange() {
-      return this.editcollege.provinceID
-    },
-  },
-  watch: {
-    async addcollegeProvinceChange(newVal, oldVal) {
-      this.prefectureQueryAll(this.addcollege.provinceID)
-    },
-    async editCollegeProvinceChange(newVal, oldVal) {
-      this.prefectureQueryAll(this.editcollege.provinceID)
-    },
   },
 }
 </script>
+

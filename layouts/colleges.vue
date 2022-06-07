@@ -22,7 +22,8 @@
          <v-list-item id="list">      
           <v-list-item-content>
             <div class="text-center">
-              {{ user.user_firstname }}
+              {{ user.collegeID }} <br>
+              {{ user.collegeName }}
             </div>             
           </v-list-item-content>
         </v-list-item>
@@ -95,6 +96,7 @@ export default {
   name: 'DefaultLayout',
   data() {
     return {     
+       ApiKey: 'bmevec2022',
       clipped: false,
       drawer: false,
       fixed: false,
@@ -102,23 +104,18 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'หน้าแรก',
-          to: '/',
+          to: '/colleges',
         },
         {
           icon: 'mdi-chart-histogram',
           title: 'จัดการผู้ใช้งานระบบ',
-          to: '/dashboardbme',
+          to: '/colleges/college_user',
         },       
         {
           icon: 'mdi-newspaper',
           title: 'ข่าวประชาสัมพันธ์',
-          to: '/news',
-        }, 
-        {
-          icon: 'mdi-newspaper',
-          title: 'ข้อมูลสถานศึกษา',
-          to: '/news',
-        },       
+          to: '/colleges/college_news',
+        },            
       ],   
 
       miniVariant: false,
@@ -142,12 +139,11 @@ export default {
       if(userSession=='0'){    
       this.user = 'null'   
       }else{      
-      result = await this.$http.post('admin.php', {
-        user_name: userSession.user_name,
-        ApiKey: 'HRvec2021',
+      result = await this.$http.post('college.php', {      
+        ApiKey: this.ApiKey,
+        collegeID: userSession.collegeID
       })
-      this.user = result.data
-      console.log(this.user)
+      this.user = result.data    
       }
     },
     logout() {
