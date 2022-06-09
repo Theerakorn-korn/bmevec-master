@@ -29,6 +29,19 @@
                       <v-chip color="green"> สำหรับสถานศึกษา</v-chip>
                       <v-divider class="mx-4 ma-2 green"></v-divider>
                     </h2>
+                    <h2 class="pa-5 text-center green--text">
+                      <v-radio-group v-model="user_type" row>
+                        <v-radio
+                          label="ผู้ดูแลระบบสถานศึกษา"
+                          value="collegeAdmin"
+                        ></v-radio>
+                        <v-radio
+                          label="ประชาสัมพันธ์"
+                          value="collegeUser"
+                        ></v-radio>
+                      </v-radio-group>
+                    </h2>
+
                     <v-form ref="form_college" lazy-validation>
                       <v-text-field
                         color="green"
@@ -62,7 +75,12 @@
                       ></v-text-field>
                     </v-form>
                     <div class="text-center">
-                      <v-btn rounded color="primary" large @click="userLogin_college()">
+                      <v-btn
+                        rounded
+                        color="primary"
+                        large
+                        @click="userLogin_college()"
+                      >
                         <v-icon>mdi-login-variant</v-icon> เข้าสู่ระบบ</v-btn
                       >
                     </div>
@@ -129,7 +147,7 @@
       </v-card>
       <v-snackbar v-model="dialog" top>
         <v-card-text>
-         <h3>{{ dialog_msg }}</h3> 
+          <h3>{{ dialog_msg }}</h3>
         </v-card-text>
 
         <template v-slot:action="{ attrs }">
@@ -151,13 +169,14 @@ export default {
     return {
       show1: false,
       tabs: null,
-      collegeID:'',
-      collegePassword:'',
+      collegeID: '',
+      collegePassword: '',
       userName: '',
       userPassword: '',
       dialog: false,
       dialog_msg: '',
       snackbar_timeout: 10000,
+      user_type: 'collegeAdmin',
     }
   },
 
@@ -165,29 +184,56 @@ export default {
 
   methods: {
     async userLogin_college() {
-      if (this.$refs.form_college.validate()) {
-        let result = await this.$http.post('login.php?crud=college', {
-          collegeID: this.collegeID,
-          collegePassword: this.collegePassword,
-        })
-        console.log(result.data)
-        if (result.data.collegeStatus) {
-          let user = result.data        
-          sessionStorage.setItem('user', JSON.stringify(user))
-          if (user.collegeStatus == 'Open') {
+      if (this.user_type == 'collegeAdmin') {
+        console.log('collegeAdmin')
+        if (this.$refs.form_college.validate()) {
+          let result = await this.$http.post('login.php?crud=college', {
+            collegeID: this.collegeID,
+            collegePassword: this.collegePassword,
+          })
+          console.log(result.data)
+          if (result.data.collegeStatus) {
+            let user = result.data
             sessionStorage.setItem('user', JSON.stringify(user))
-            this.$router.push('/colleges')
+            if (user.collegeStatus == 'Open') {
+              sessionStorage.setItem('user', JSON.stringify(user))
+              this.$router.push('/colleges')
+            } else {
+              sessionStorage.clear()
+              this.dialog = true
+              this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
+            }
           } else {
             sessionStorage.clear()
             this.dialog = true
             this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
           }
         }
-        else
-        {
-           sessionStorage.clear()
+      } else if (this.user_type == 'collegeUser') {
+
+         console.log('collegeUser')
+        if (this.$refs.form_college.validate()) {
+          let result = await this.$http.post('login.php?crud=collegeUser', {
+            college_user_username: this.collegeID,
+            college_user_password: this.collegePassword,
+          })
+          console.log(result.data)
+          if (result.data.college_user_type) {
+            let user = result.data
+            sessionStorage.setItem('user', JSON.stringify(user))
+            if (user.college_user_type == 'information') {
+              sessionStorage.setItem('user', JSON.stringify(user))
+              this.$router.push('/users')
+            } else {
+              sessionStorage.clear()
+              this.dialog = true
+              this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
+            }
+          } else {
+            sessionStorage.clear()
             this.dialog = true
             this.dialog_msg = 'ชื่อผู้ใช้ หรือรหัสผ่าน ไม่ถูกต้อง'
+          }
         }
       }
     },
@@ -200,7 +246,7 @@ export default {
         })
         console.log(result.data)
         if (result.data.userType) {
-          let user = result.data          
+          let user = result.data
           sessionStorage.setItem('user', JSON.stringify(user))
           if (user.userType == 'VecAdmin') {
             sessionStorage.setItem('user', JSON.stringify(user))

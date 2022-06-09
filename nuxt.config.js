@@ -24,6 +24,7 @@ export default {
   plugins: [
     { src : '~/plugins/vue-apexchart.js', ssr : false },
     { src : '~/plugins/axios.js', ssr : false },
+    { src : '~/plugins/moment.js', ssr : false },
     
 
   ],
@@ -77,6 +78,7 @@ export default {
     vendor : [
       'vue-apexchart',
       'vue-axios',
+      'moment',
    ]
   },
 }

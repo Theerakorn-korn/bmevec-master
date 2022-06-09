@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-navigation-drawer
+  <v-app>  
+ <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -16,14 +16,20 @@
           <v-list-item-content>
             <v-list-item-title class="text-h5 text-left">
               BmeVEC
-            </v-list-item-title>
-            <!--  <v-list-item-subtitle class="text-left">
-              กลุ่มงานติดตามฯ
-            </v-list-item-subtitle> -->
+            </v-list-item-title>           
+          </v-list-item-content>
+        </v-list-item>
+         <v-list-item id="list">      
+          <v-list-item-content>
+            <div class="text-center">
+              {{ user.college_user_idcard }} <br>
+              {{ user.college_user_fristname + ' ' + user.college_user_lastname }}
+            </div>             
           </v-list-item-content>
         </v-list-item>
         <v-divider class="mx-4 ma-2"></v-divider>
-        <v-list-item-group v-model="selectedItem" color="#C8E6C9">
+       
+        <v-list-item-group color="#C8E6C9">
           <v-list-item
             v-for="(item, i) in items"
             :key="i"
@@ -38,18 +44,16 @@
               <v-list-item-title v-text="item.title" />
             </v-list-item-content>
           </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      <template v-slot:append>
-        <div class="ma-1">
-          <v-btn href="http://bme.vec.go.th/" target="_blank" block rounded color="#837e7d" class="black--text">สำนักนโยบายและแผน</v-btn> 
-        </div>
-         <div class="ma-1">
-          <v-btn href="https://bme.vec.go.th/th-th/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%99/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%A5.aspx" target="_blank" block rounded color="#837e7d" class="black--text">กลุ่มงานติดตามฯ</v-btn> 
-        </div>        
-      </template>
+        </v-list-item-group>     
+      </v-list>    
+       <template v-slot:append>
+      <div class="ma-2">
+        <v-btn rounded block @click="logout()">
+          Logout
+        </v-btn>
+      </div>
+    </template>
     </v-navigation-drawer>
-
     <v-app-bar dark id="headerbar" :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn icon @click.stop="miniVariant = !miniVariant">
@@ -65,9 +69,8 @@
       <v-app>
         <v-container fluid>
           <Nuxt />
-          <Settings />       
+          <Settings />
         </v-container>
-        
       </v-app>
     </v-main>
     <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
@@ -87,12 +90,13 @@
 import { mapState } from 'vuex'
 import Settings from '~/components/Settings.vue'
 import Footers from '../components/Footers.vue'
+import userlogin from '../pages/login.vue'
 
 export default {
   name: 'DefaultLayout',
   data() {
-    return {
-      selectedItem: 1,
+    return {     
+       ApiKey: 'bmevec2022',
       clipped: false,
       drawer: false,
       fixed: false,
@@ -100,33 +104,49 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'หน้าแรก',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-histogram',
-          title: 'ระบบ e-MVS',
-          to: '/dashboardbme',
-        },
-        {
-          icon: 'mdi-shield-half-full',
-          title: 'ระบบควบคุมภายใน',
-          to: '/dashboardbme',
-        },
+          to: '/colleges',
+        },        
         {
           icon: 'mdi-newspaper',
           title: 'ข่าวประชาสัมพันธ์',
-          to: '/news',
-        }
- 
-      ],
+          to: '/colleges/college_news',
+        },            
+      ],   
+
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'กลุ่มงานติดตามและประเมินผล สํานักนโยบายและแผน',
       icons: ['mdi-facebook', 'mdi-line'],
+      user: [],
     }
   },
-  components: { Settings, Footers },
+  components: { Settings, Footers ,userlogin},
+  async mounted() {
+    await this.check_login()
+  },
+
+ 
+  methods: {
+    async check_login() {
+      let result
+      let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+      if(userSession=='0'){    
+      this.user = 'null'   
+      }else{      
+      result = await this.$http.post('college_user.php', {      
+        ApiKey: this.ApiKey,
+        college_user_id: userSession.college_user_id
+      })
+      this.user = result.data      
+      }
+    },
+    logout() {
+      sessionStorage.clear()
+      this.$router.push('/')
+      this.check_login()
+    },
+  },
 }
 </script>
 <style scoped>
@@ -142,7 +162,6 @@ export default {
 </style>
 
 <style scoped>
-
 #headerbar {
   background-color: #750606;
   border-bottom: 3px solid #d68822;
@@ -154,5 +173,8 @@ export default {
 #list-item-head {
   background-color: #750606;
   border-bottom: 3px solid #d68822;
+}
+#list{
+  background-color: #3b3a3a;
 }
 </style>

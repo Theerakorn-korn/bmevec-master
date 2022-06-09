@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-card id="body_card">
         <v-card-text class="font-weight-medium">
-          <h3><v-icon>mdi-domain</v-icon> ข่าวประชาสัมพันธ์</h3>
+          <h3><v-icon>mdi-newspaper</v-icon> ข่าวประชาสัมพันธ์สถานศึกษา</h3>
         </v-card-text>
       </v-card>
       <v-card>
@@ -42,7 +42,7 @@
                 Best Practice</v-chip
               >
               <v-chip v-if="item.news_type === 'Skill'" color="#004D40" dark>
-                <v-icon color="#ffcc00" class="pa-2">mdi-account-star</v-icon>
+                <v-icon color="#ffcc00" class="pa-2">mdi-newspaper</v-icon>
                 การแข่งขันทักษะวิชาชีพ</v-chip
               >
               <v-chip
@@ -59,22 +59,23 @@
           <template v-slot:[`item.news_pic`]="{ item }">
             <div class="text-center">
               <v-btn
-              v-if="item.news_status === 'send'"
+                v-if="item.news_status === 'send'"
                 rounded
                 text
                 color="info"
                 @click="UploadImageDialog(item.news_id)"
               >
-                <v-chip  color="#EF9A9A" dark>
+                <v-chip color="#EF9A9A" dark>
                   <v-icon color="#ffcc00" class="pa-2">mdi-cloud-upload</v-icon>
-                  เพิ่มภาพ</v-chip
+                  ภาพ</v-chip
                 >
               </v-btn>
-              
               <v-btn
                 v-else-if="item.news_status === 'allow'"
                 rounded
-                text       
+                text
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
                 <v-chip color="#7CB342" dark>
                   <v-icon color="#ffcc00" class="pa-2"
@@ -87,7 +88,8 @@
                 v-else-if="item.news_status === 'cancel'"
                 rounded
                 text
-                color="info"              
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
                 <v-chip color="red" dark>
                   <v-icon color="#ffcc00" class="pa-2">mdi-cancel</v-icon>
@@ -98,7 +100,8 @@
                 v-else-if="item.news_status === 'disallow'"
                 rounded
                 text
-                color="info"              
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
                 <v-chip color="warning" dark>
                   <v-icon color="#ffcc00" class="pa-2">mdi-cancel</v-icon>
@@ -110,25 +113,49 @@
 
           <template v-slot:[`item.news_status`]="{ item }">
             <div class="text-center">
-              <v-chip v-if="item.news_status === 'send'" color="#EF9A9A" dark>
-                ขออนุญาตประกาศ</v-chip
+              <v-btn
+                v-if="item.news_status === 'send'"
+                rounded
+                text
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
-              <v-chip v-if="item.news_status === 'allow'" color="#7CB342" dark>
-                ประกาศ</v-chip
+                <v-chip color="#EF9A9A" dark> ขออนุญาตประกาศ</v-chip>
+              </v-btn>
+
+              <v-btn
+                v-else-if="item.news_status === 'allow'"
+                rounded
+                text
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
-              <v-chip v-if="item.news_status === 'cancel'" color="red" dark>
-                ประกาศ</v-chip
+                <v-chip color="#7CB342" dark> ประกาศ</v-chip>
+              </v-btn>
+              <v-btn
+                v-else-if="item.news_status === 'cancel'"
+                rounded
+                text
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
-               <v-chip v-if="item.news_status === 'cancel'" color="warning" dark>
-                ไม่อนุญาตประกาศ</v-chip
+                <v-chip color="red" dark> ยกเลิกประกาศ</v-chip>
+              </v-btn>
+                <v-btn
+                v-else-if="item.news_status === 'disallow'"
+                rounded
+                text
+                color="info"
+                @click="ChecknewsDialog(item.news_id)"
               >
+                <v-chip color="warning" dark> ไม่อนุญาตประกาศ</v-chip>
+              </v-btn>
             </div>
           </template>
 
           <template v-slot:[`item.actions`]="{ item }">
             <div class="text-center">
               <v-btn
-              v-if="item.news_status !== 'allow'"
                 small
                 fab
                 dark
@@ -141,7 +168,6 @@
           </template>
           <template v-slot:[`item.action_s`]="{ item }">
             <v-btn
-            v-if="item.news_status !== 'allow'"
               class="text-center"
               small
               fab
@@ -190,7 +216,7 @@
                         item-value="value"
                         v-model="addnews.news_type"
                         label="ประเภทข่าว"
-                        prepend-icon="mdi-account-star"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -201,7 +227,7 @@
                       <v-text-field
                         label="หัวข้อ"
                         v-model="addnews.news_topic"
-                        prepend-icon="mdi-account"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -212,7 +238,7 @@
                       <v-textarea
                         label="รายละเอียด : "
                         v-model="addnews.news_detail"
-                        prepend-icon="mdi-account"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -399,6 +425,162 @@
         </v-dialog>
       </v-layout>
 
+      <!--Checknewsdialogshow  -->
+      <v-layout row justify-center>
+        <v-dialog v-model="Checknewsdialogshow" persistent max-width="60%">
+          <v-card id="layout">
+            <v-card id="card_model" class="px-5 py-3">
+              <v-app-bar flat color="rgba(0, 0, 0, 0)">
+                <v-icon color="green" class="pa-2" large>mdi-newspaper</v-icon>
+                <v-toolbar-title class="green--text pl-0">
+                  ตรวจสอบข่าว
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn color="" icon @click.stop="Checknewsdialogshow = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-app-bar>
+            </v-card>
+
+            <v-card-text>
+              <v-form ref="Checknewsform" lazy-validation>
+                <v-container grid-list-md>
+                  <v-layout wrap>
+                    <v-flex md12>
+                      <v-banner two-line>
+                        <v-avatar
+                          slot="icon"
+                          color="deep-purple accent-4"
+                          size="40"
+                        >
+                          <v-icon icon="mdi-lock" color="white">
+                            mdi-camera
+                          </v-icon>
+                        </v-avatar>
+                        <v-chip
+                          color="red"
+                          dark
+                          v-if="editnews.news_status === 'cancel'"
+                        >
+                          <v-icon class="pa-2">mdi-information</v-icon>
+                          ข่าวนี้ได้ถูกยกเลิกประกาศ</v-chip
+                        >
+                         <v-chip
+                          color="warning"
+                          dark
+                          v-else-if="editnews.news_status === 'disallow'"
+                        >
+                          <v-icon class="pa-2">mdi-information</v-icon>
+                          ข่าวนี้ไม่อนุญาตประกาศ</v-chip
+                        >
+                        <h4>{{ editnews.collegeName }}</h4>
+                        <h4>{{ editnews.news_topic }}</h4>
+                        <h5>{{ editnews.news_detail }}</h5>
+                        <h5 color="deep-purple accent-4">
+                          {{ editnews.news_date }}
+                        </h5>
+                        <template v-slot:actions>
+                          <v-btn
+                            rounded
+                            color="success"
+                            @click="approveNews()"
+                            v-if="
+                              editnews.news_status === 'send' ||
+                              editnews.news_status === 'cancel' ||
+                              editnews.news_status === 'disallow'
+                              
+                            "
+                          >
+                            เห็นควรประกาศ
+                          </v-btn>
+                          <v-btn
+                            rounded
+                            color="warning"
+                            @click="disapprovedNews()"
+                            v-if="
+                              editnews.news_status === 'send' ||
+                              editnews.news_status === 'cancel'
+                            "
+                          >
+                            ไม่เห็นควรประกาศ
+                          </v-btn>
+                          <v-btn
+                            rounded
+                            color="red"
+                            @click="cancelNews()"
+                            v-if="editnews.news_status === 'allow'"
+                            dark
+                          >
+                            ยกเลิกประกาศ
+                          </v-btn>
+                        </template>
+                      </v-banner>
+                    </v-flex>
+
+                    <v-flex md12>
+                      <v-row>
+                        <v-col
+                          v-for="item in news_pictures"
+                          :key="item.news_pic_id"
+                          class="d-flex child-flex"
+                          cols="4"
+                        >
+                          <v-img
+                            :src="
+                              'http://localhost:8080/bmevec_files/' +
+                              item.news_pic_name
+                            "
+                            :lazy-src="
+                              'http://localhost:8080/bmevec_files/' +
+                              item.news_pic_name
+                            "
+                            aspect-ratio="1"
+                            class="grey lighten-2"
+                          >
+                            <template v-slot:placeholder>
+                              <v-row
+                                class="fill-height ma-0"
+                                align="center"
+                                justify="center"
+                              >
+                                <v-progress-circular
+                                  indeterminate
+                                  color="grey lighten-5"
+                                ></v-progress-circular>
+                              </v-row>
+                            </template>
+                            <v-btn
+                              v-if="editnews.news_status === 'send'"
+                              class="ma-2"
+                              text
+                              icon
+                              color="red"
+                              @click="deleteimageDialog(item.news_pic_id)"
+                            >
+                              <v-icon>mdi-delete-circle</v-icon>
+                            </v-btn>
+                          </v-img>
+                        </v-col>
+                      </v-row>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-form>
+            </v-card-text>
+            <v-card-actions id="card_model_footer" class="pa-4">
+              <v-spacer></v-spacer>
+              <v-btn
+                class="pa-4"
+                large
+                @click.stop="Checknewsdialogshow = false"
+                rounded
+                ><v-icon dark>mdi-close</v-icon> ยกเลิก</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-layout>
+
       <!-- V-model deleteimagedialog -->
       <v-layout row justify-center>
         <v-dialog v-model="deleteimagedialog" persistent max-width="40%">
@@ -406,7 +588,7 @@
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
                 <v-icon color="red" class="pa-2" large
-                  >mdi-account-minus</v-icon
+                  >mdi-newspaper</v-icon
                 >
                 <v-toolbar-title class="red--text pl-0">
                   ลบภาพนี้
@@ -480,7 +662,7 @@
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
                 <v-icon color="red" class="pa-2" large
-                  >mdi-account-minus</v-icon
+                  >mdi-newspaper</v-icon
                 >
                 <v-toolbar-title class="red--text pl-0">
                   ลบข้อมูลสถานศึกษา
@@ -496,17 +678,20 @@
                 <v-container grid-list-md>
                   <v-layout wrap class="pa-4">
                     <v-flex xs12>
-                      <h2 v-if="result_picture_counts.id_main_count==='0'">
+                      <h2 v-if="result_picture_counts.id_main_count === '0'">
                         ยืนยันการลบข้อมูล
-                        <span class="red--text"> หัวข้อ : {{ editnews.news_topic }}</span>
+                        <span class="red--text">
+                          หัวข้อ : {{ editnews.news_topic }}</span
+                        >
                       </h2>
 
                       <h2 v-else>
                         กรุณาลบรูปภาพในหัวข้อดังกล่าวก่อนการลบหัวข้อข่าว
-                        <span class="red--text"> จำนวนภาพ : {{ result_picture_counts.id_main_count }} ภาพ</span>
+                        <span class="red--text">
+                          จำนวนภาพ :
+                          {{ result_picture_counts.id_main_count }} ภาพ</span
+                        >
                       </h2>
-
-
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -519,7 +704,7 @@
                 ><v-icon dark>mdi-close</v-icon>ยกเลิก</v-btn
               >
               <v-btn
-              v-if="result_picture_counts.id_main_count==='0'"
+                v-if="result_picture_counts.id_main_count === '0'"
                 rounded
                 large
                 color="red darken-3"
@@ -533,6 +718,55 @@
         </v-dialog>
       </v-layout>
 
+      <!-- V-model cancelnewsdialog -->
+      <v-layout row justify-center>
+        <v-dialog v-model="cancelnewsdialog" persistent max-width="40%">
+          <v-card id="layout">
+            <v-card id="card_model" class="px-5 py-3">
+              <v-app-bar flat color="rgba(0, 0, 0, 0)">
+                <v-icon color="red" class="pa-2" large>mdi-cancel</v-icon>
+                <v-toolbar-title class="red--text pl-0">
+                  ยกเลิกประกาศข่าว
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn color="" icon @click.stop="cancelnewsdialog = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-app-bar>
+            </v-card>
+            <v-card-text>
+              <v-form ref="cancelnewsform" lazy-validation>
+                <v-container grid-list-md>
+                  <v-layout wrap class="pa-4">
+                    <v-flex xs12>
+                      <h3>ยืนยันการยกเลิกประกาศข่าว</h3>
+                      <h2>
+                        <span class="red--text">
+                          หัวข้อ : {{ editnews.news_topic }}</span
+                        >
+                      </h2>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-form>
+            </v-card-text>
+
+            <v-card-actions id="card_model_footer" class="pa-4">
+              <v-spacer></v-spacer>
+              <v-btn
+                rounded
+                large
+                color="red darken-3"
+                @click.stop="cancelnewSubmit()"
+                dark
+              >
+                <v-icon dark>mdi-cancel</v-icon>&nbsp;ดำเนินการยกเลิก
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-layout>
+
       <!--editnewsdialog  -->
       <v-layout row justify-center>
         <v-dialog v-model="editnewsdialog" persistent max-width="50%">
@@ -540,7 +774,7 @@
             <v-card id="card_model" class="px-5 py-3">
               <v-app-bar flat color="rgba(0, 0, 0, 0)">
                 <v-icon color="warning" class="pa-2" large
-                  >mdi-account-edit</v-icon
+                  >mdi-newspaper</v-icon
                 >
                 <v-toolbar-title class="warning--text pl-0">
                   แก้ไขข้อมูลสถานศึกษา
@@ -563,7 +797,7 @@
                         item-value="value"
                         v-model="editnews.news_type"
                         label="ประเภทข่าว"
-                        prepend-icon="mdi-account-star"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -574,7 +808,7 @@
                       <v-text-field
                         label="หัวข้อ"
                         v-model="editnews.news_topic"
-                        prepend-icon="mdi-account"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -585,7 +819,7 @@
                       <v-textarea
                         label="รายละเอียด : "
                         v-model="editnews.news_detail"
-                        prepend-icon="mdi-account"
+                        prepend-icon="mdi-newspaper"
                         required
                         :rules="[(v) => !!v || '']"
                         rounded
@@ -645,7 +879,7 @@
 </template>
 <script>
 export default {
-  layout: 'colleges',
+  layout: 'administrators',
   data() {
     return {
       loading: true,
@@ -656,6 +890,9 @@ export default {
       deletenewsdialog: false,
       addimagedialog: false,
       deleteimagedialog: false,
+      Checknewsdialogshow: false,
+      cancelnewsdialog: false,
+
       snackbar: {
         show: false,
         color: '',
@@ -674,7 +911,7 @@ export default {
 
       headers: [
         { text: 'ประเภท', align: 'center', value: 'news_type' },
-        { text: 'ผู้ประกาศ', align: 'center', value: 'news_users' },
+        { text: 'ผู้ประกาศ', align: 'center', value: 'collegeName' },
         { text: 'หัวข้อ', align: 'center', value: 'news_topic' },
         { text: 'วันที่', align: 'center', value: 'news_date' },
         { text: 'ภาพประกอบ', align: 'center', value: 'news_pic' },
@@ -715,30 +952,18 @@ export default {
       deletenews_pictures: [],
       addimage: {},
       result_picture_counts: [],
-      deletenews:{},
+      deletenews: {},
     }
   },
   async mounted() {
-    await this.users()
     await this.newsQueryAll()
   },
   methods: {
-    async users() {
-      let result
-      let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
-      result = await this.$http.post('college.php', {
-        ApiKey: this.ApiKey,
-        collegeID: userSession.collegeID,
-      })
-      this.user = result.data
-    },
-
     async newsQueryAll() {
       this.loading = true
       let result = await this.$http
         .post('news.php', {
           ApiKey: this.ApiKey,
-          news_college: this.user.collegeID,
         })
         .finally(() => (this.loading = false))
       this.newss = result.data
@@ -788,7 +1013,7 @@ export default {
           if (this.news_pics != '') {
             let formData = new FormData()
             let filename =
-              userSession.collegeID +
+              userSession.userName +
               '' +
               this.time_stamp +
               '' +
@@ -822,7 +1047,7 @@ export default {
           result = await this.$http.post(
             'news_picture.insert.php',
             this.addimage
-          )        
+          )
           if (result.data.status || uploaded) {
             this.snackbar.icon = 'mdi-content-save'
             this.snackbar.color = 'success'
@@ -831,7 +1056,7 @@ export default {
 
             let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
             this.data_syslog.ApiKey = this.ApiKey
-            this.data_syslog.user_account = userSession.collegeID
+            this.data_syslog.user_account = userSession.userName
             this.data_syslog.event_log = 'insert'
             this.data_syslog.page_log = 'news_picture'
             this.data_syslog.table_log = 'news_picture'
@@ -882,17 +1107,19 @@ export default {
     async deleteimageSubmit() {
       if (this.$refs.deleteimageform.validate()) {
         this.deletenews_pictures.ApiKey = this.ApiKey
-        console.log(this.deletenews_pictures)
-        let result = await this.$http.post('news_picture.delete.php', this.deletenews_pictures)
+        let result = await this.$http.post(
+          'news_picture.delete.php',
+          this.deletenews_pictures
+        )
         if (result.data.status == true) {
           this.news = result.data
           this.snackbar.icon = 'mdi-font-awesome'
           this.snackbar.color = 'success'
           this.snackbar.text = 'ลบข้อมูลเรียบร้อย'
-          this.snackbar.show = true          
+          this.snackbar.show = true
           let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.collegeID
+          this.data_syslog.user_account = userSession.userName
           this.data_syslog.event_log = 'delete'
           this.data_syslog.page_log = 'news_picture'
           this.data_syslog.table_log = 'news_picture'
@@ -906,12 +1133,12 @@ export default {
           this.snackbar.show = true
         }
         let result_picture = await this.$http.post('news_picture.php', {
-            ApiKey: this.ApiKey,
-            news_id_main: this.editnews.news_id,
-          })
-          this.news_pictures = result_picture.data
-          this.news_pics = null
-          
+          ApiKey: this.ApiKey,
+          news_id_main: this.editnews.news_id,
+        })
+        this.news_pictures = result_picture.data
+        this.news_pics = null
+
         this.deleteimagedialog = false
       }
     },
@@ -923,7 +1150,6 @@ export default {
         this.addnews.news_users = this.user.collegeID
         this.addnews.news_date = this.date_today_log
         this.addnews.news_status = 'send'
-        console.log(this.addnews)
         let result = await this.$http.post('news.insert.php', this.addnews)
 
         if (result.data.status == true) {
@@ -935,7 +1161,7 @@ export default {
           this.newsQueryAll()
           let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.collegeID
+          this.data_syslog.user_account = userSession.userName
           this.data_syslog.event_log = 'insert'
           this.data_syslog.page_log = 'news'
           this.data_syslog.table_log = 'news'
@@ -979,7 +1205,7 @@ export default {
           this.newsQueryAll()
           let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.collegeID
+          this.data_syslog.user_account = userSession.userName
           this.data_syslog.event_log = 'update'
           this.data_syslog.page_log = 'news'
           this.data_syslog.table_log = 'news'
@@ -1003,22 +1229,19 @@ export default {
       })
       this.editnews = result.data
 
-       let result_picture_count = await this.$http.post('news_picture.php', {
+      let result_picture_count = await this.$http.post('news_picture.php', {
         ApiKey: this.ApiKey,
         news_id_main: news_id,
         count_news_id_main: 'OK',
       })
       this.result_picture_counts = result_picture_count.data
-
       this.deletenewsdialog = true
-      console.log(result.data)
     },
 
     async deletenewsSubmit() {
       if (this.$refs.deletenewsform.validate()) {
-        this.editnews.ApiKey = this.ApiKey   
-        console.log(this.deletenews)
-        let result = await this.$http.post('news.delete.php', this.editnews)       
+        this.editnews.ApiKey = this.ApiKey
+        let result = await this.$http.post('news.delete.php', this.editnews)
         if (result.data.status == true) {
           this.news = result.data
           this.snackbar.icon = 'mdi-font-awesome'
@@ -1028,7 +1251,7 @@ export default {
           this.newsQueryAll()
           let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
           this.data_syslog.ApiKey = this.ApiKey
-          this.data_syslog.user_account = userSession.collegeID
+          this.data_syslog.user_account = userSession.userName
           this.data_syslog.event_log = 'delete'
           this.data_syslog.page_log = 'news'
           this.data_syslog.table_log = 'news'
@@ -1042,6 +1265,120 @@ export default {
           this.snackbar.show = true
         }
         this.deletenewsdialog = false
+      }
+    },
+    async ChecknewsDialog(news_id) {
+      let result = await this.$http.post('news.php', {
+        ApiKey: this.ApiKey,
+        news_id: news_id,
+      })
+      this.editnews = result.data
+
+      let result_picture = await this.$http.post('news_picture.php', {
+        ApiKey: this.ApiKey,
+        news_id_main: news_id,
+      })
+      this.news_pictures = result_picture.data
+      this.Checknewsdialogshow = true
+    },
+
+    async approveNews() {
+      if (this.$refs.Checknewsform.validate()) {
+        this.editnews.ApiKey = this.ApiKey
+        this.editnews.news_status = 'allow'
+        let result = await this.$http.post('news.update.php', this.editnews)
+        if (result.data.status == true) {
+          this.news = result.data
+          this.snackbar.icon = 'mdi-font-awesome'
+          this.snackbar.color = 'success'
+          this.snackbar.text = 'แก้ไขข้อมูลเรียบร้อย'
+          this.snackbar.show = true
+          this.newsQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+          this.data_syslog.ApiKey = this.ApiKey
+          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.event_log = 'update'
+          this.data_syslog.page_log = 'news'
+          this.data_syslog.table_log = 'news'
+          this.data_syslog.detail_log = this.editnews.newsName + 'allow'
+          this.data_syslog.date_times = this.date_today_log
+          await this.$http.post('data_syslog.insert.php', this.data_syslog)
+        } else {
+          this.snackbar.icon = 'mdi-close-network'
+          this.snackbar.color = 'red'
+          this.snackbar.text = 'แก้ไขข้อมูลผิดพลาด'
+          this.snackbar.show = true
+        }
+        this.Checknewsdialogshow = false
+      }
+    },
+    async cancelNews() {
+      let result = await this.$http.post('news.php', {
+        ApiKey: this.ApiKey,
+        news_id: this.editnews.news_id,
+      })
+      this.editnews = result.data
+      this.cancelnewsdialog = true
+    },
+    async cancelnewSubmit() {
+      if (this.$refs.Checknewsform.validate()) {
+        this.editnews.ApiKey = this.ApiKey
+        this.editnews.news_status = 'cancel'
+        let result = await this.$http.post('news.update.php', this.editnews)
+        if (result.data.status == true) {
+          this.news = result.data
+          this.snackbar.icon = 'mdi-font-awesome'
+          this.snackbar.color = 'success'
+          this.snackbar.text = 'แก้ไขข้อมูลเรียบร้อย'
+          this.snackbar.show = true
+          this.newsQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+          this.data_syslog.ApiKey = this.ApiKey
+          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.event_log = 'Update_cancel'
+          this.data_syslog.page_log = 'news'
+          this.data_syslog.table_log = 'news'
+          this.data_syslog.detail_log = this.editnews.newsName + 'cancel'
+          this.data_syslog.date_times = this.date_today_log
+          await this.$http.post('data_syslog.insert.php', this.data_syslog)
+        } else {
+          this.snackbar.icon = 'mdi-close-network'
+          this.snackbar.color = 'red'
+          this.snackbar.text = 'แก้ไขข้อมูลผิดพลาด'
+          this.snackbar.show = true
+        }
+        this.Checknewsdialogshow = false
+        this.cancelnewsdialog = false
+      }
+    },
+    async disapprovedNews() {
+       if (this.$refs.Checknewsform.validate()) {
+        this.editnews.ApiKey = this.ApiKey
+        this.editnews.news_status = 'disallow'
+        let result = await this.$http.post('news.update.php', this.editnews)
+        if (result.data.status == true) {
+          this.news = result.data
+          this.snackbar.icon = 'mdi-font-awesome'
+          this.snackbar.color = 'success'
+          this.snackbar.text = 'แก้ไขข้อมูลเรียบร้อย'
+          this.snackbar.show = true
+          this.newsQueryAll()
+          let userSession = JSON.parse(sessionStorage.getItem('user')) || 0
+          this.data_syslog.ApiKey = this.ApiKey
+          this.data_syslog.user_account = userSession.userName
+          this.data_syslog.event_log = 'update'
+          this.data_syslog.page_log = 'news'
+          this.data_syslog.table_log = 'news'
+          this.data_syslog.detail_log = this.editnews.newsName + 'disallow'
+          this.data_syslog.date_times = this.date_today_log
+          await this.$http.post('data_syslog.insert.php', this.data_syslog)
+        } else {
+          this.snackbar.icon = 'mdi-close-network'
+          this.snackbar.color = 'red'
+          this.snackbar.text = 'แก้ไขข้อมูลผิดพลาด'
+          this.snackbar.show = true
+        }
+        this.Checknewsdialogshow = false
       }
     },
   },

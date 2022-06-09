@@ -108,23 +108,51 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'หน้าแรก',
-          to: '/',
+          to: '/administrator',
         },
         {
-          icon: 'mdi-newspaper',
-          title: 'ข่าวประชาสัมพันธ์',
-          to: '/news',
+          icon: 'mdi-account-settings',
+          title: 'ปฏิทินปฏิบัติงาน',
+          to: '/administrator/period',
         },
-        {
-          icon: 'mdi-login-variant',
+       
+         {
+          icon: 'mdi-account-settings',
           title: 'ผู้ใช้งานระบบ',
           to: '/administrator/user',
         },
           {
-          icon: 'mdi-login-variant',
+          icon: 'mdi-domain',
           title: 'สถานศึกษา',
           to: '/administrator/college',
         },
+        {
+          icon: 'mdi-domain',
+          title: 'ผู้ใช้งานระบบสถานศึกษา',
+          to: '/administrator/college_user',
+        },
+
+         {
+          icon: 'mdi-newspaper',
+          title: 'ข่าวสถานศึกษา',
+          to: '/administrator/college_news',
+        },
+         {
+          icon: 'mdi-file-document',
+          title: 'เอกสารประกอบการปฏิบัติงาน',
+          to: '/administrator/documents',
+        },
+          {
+          icon: 'mdi-printer',
+          title: 'รายงานผลการปฏิบัติงาน',
+          to: '/administrator/reportsoutcome',
+        },
+          {
+          icon: 'mdi-book',
+          title: 'หนังสือแจ้งสถานศึกษา/คำสั่ง',
+          to: '/administrator/notices',
+        },
+       
       ],
     
   
@@ -154,7 +182,7 @@ export default {
           ApiKey: 'bmevec2022',
         })
         this.user = result.data
-        console.log(this.user)
+       
       }
     },
     logout() {
